@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <script defer src="script.js"></script>
+    </head>
+    <body>
+        <script>
+            //const button = document.getElementById("button");
+            //console.log(button);
+            window.addEventListener("DOMContentLoaded",function(){
+                //document 객체 변환 완료
+                const button = document.getElementById("button");
+                console.log(button);
+            })
+        </script>
+        <button type="button" id="button">클릭</button>
+    </body>
+</html>
+
+<!--
+    번역 순서가 위에서 밑으로 이뤄지는데
+    script태그 내용을 실행할때 아직 button이 document 객체로 존재하지 않는다.
+
+    DOMContentLoaded 이벤트가 발생시 document객체로 변환작업 끝
+-->
