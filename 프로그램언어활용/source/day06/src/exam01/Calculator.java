@@ -1,2 +1,5 @@
-package exam01;public class Calculator {
+package exam01;
+
+public class Calculator {
+
 }

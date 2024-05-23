@@ -1,2 +1,4 @@
-package exam02;public class B {
+package exam02;
+
+public class B {
 }
