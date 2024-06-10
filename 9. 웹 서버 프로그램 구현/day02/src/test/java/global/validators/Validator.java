@@ -1,2 +1,5 @@
-package global.validators;public interface Validator {
+package global.validators;
+
+public interface Validator <T>{
+    void check(T form);
 }
