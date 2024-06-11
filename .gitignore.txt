@@ -5,3 +5,4 @@
 /apache-maven-*
 /apache-tomcat-*
 /gradle-*
+/apache-tomcat-*
