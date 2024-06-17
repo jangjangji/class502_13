@@ -16,12 +16,9 @@ import java.util.List;
 public class BoardListController extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
         BoardInfoService service = new BoardInfoService();
         List<BoardData> items = service.getList();
-
         req.setAttribute("items", items);
-
         RequestDispatcher rd = req.getRequestDispatcher("/WEB-INF/templates/board/list.jsp");
         rd.forward(req, resp);
     }
