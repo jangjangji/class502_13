@@ -12,6 +12,7 @@
             out.write("*");
         }
     %>
+
 </div>
 <%--color :${attrs.color}<br>--%>
 <%--size : ${attrs.size}<br>--%>
