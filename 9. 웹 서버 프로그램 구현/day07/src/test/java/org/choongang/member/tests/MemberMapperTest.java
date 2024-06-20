@@ -21,7 +21,7 @@ public class MemberMapperTest {
 
     @BeforeEach
     void init() {
-        session = DBConn.getSesson(false);
+        session = DBConn.getSession(false);
         mapper = session.getMapper(MemberMapper.class);
     }
 
@@ -43,7 +43,7 @@ public class MemberMapperTest {
         Member member2 = mapper.get(member.getEmail()); // 이메일로 조회되는 회원이 있는지 테스트
         assertEquals(member.getEmail(), member2.getEmail());
     }
-
+    
     @AfterEach
     void destroy() {
         session.rollback();

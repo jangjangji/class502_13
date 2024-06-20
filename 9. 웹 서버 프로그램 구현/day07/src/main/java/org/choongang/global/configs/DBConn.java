@@ -14,15 +14,19 @@ public class DBConn {
     static {
         try {
             Reader reader = Resources.getResourceAsReader("org/choongang/global/configs/mybatis-config.xml");
+
             factory = new SqlSessionFactoryBuilder().build(reader);
+
         } catch (IOException e) {
-            e.printStackTrace();
+           e.printStackTrace();
         }
     }
-    public static SqlSession getSesson(boolean autoCommit){
+
+    public static SqlSession getSession(boolean autoCommit) {
         return factory.openSession(autoCommit);
     }
-    public static SqlSession sqlSession(){
-        return getSesson(true);
+
+    public static SqlSession getSession() {
+        return getSession(true);
     }
 }

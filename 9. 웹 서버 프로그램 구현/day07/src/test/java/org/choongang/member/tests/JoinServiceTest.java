@@ -1,12 +1,14 @@
 package org.choongang.member.tests;
 
 import com.github.javafaker.Faker;
+import org.choongang.global.configs.DBConn;
 import org.choongang.global.exceptions.BadRequestException;
 import org.choongang.member.controllers.RequestJoin;
+import org.choongang.member.entities.Member;
 import org.choongang.member.exceptions.DuplicatedMemberException;
+import org.choongang.member.mapper.MemberMapper;
 import org.choongang.member.services.JoinService;
 import org.choongang.member.services.MemberServiceProvider;
-import org.choongang.member.validators.JoinValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,21 +24,23 @@ import static org.junit.jupiter.api.Assertions.*;
 public class JoinServiceTest {
 
     private JoinService service;
+    private MemberMapper mapper;
 
     @BeforeEach
     void init() {
         service = MemberServiceProvider.getInstance().joinService();
+        mapper = DBConn.getSession().getMapper(MemberMapper.class);
     }
 
     RequestJoin getData() {
         Faker faker = new Faker(Locale.ENGLISH);
 
         RequestJoin form =  RequestJoin.builder()
-                .email(System.currentTimeMillis() + faker.internet().emailAddress())
-                .password(faker.regexify("\\w{8}").toLowerCase())
-                .userName(faker.name().fullName())
-                .termsAgree(true)
-                .build();
+                    .email(System.currentTimeMillis() + faker.internet().emailAddress())
+                    .password(faker.regexify("\\w{8}").toLowerCase())
+                    .userName(faker.name().fullName())
+                    .termsAgree(true)
+                    .build();
         form.setConfirmPassword(form.getPassword());
 
         return form;
@@ -45,9 +49,14 @@ public class JoinServiceTest {
     @Test
     @DisplayName("회원가입 성공시 예외가 발생하지 않음")
     void successTest() {
+        RequestJoin form = getData();
         assertDoesNotThrow(() -> {
-            service.process(getData());
+            service.process(form);
         });
+
+        // 가입된 이메일로 회원이 조회 되는지 체크
+        Member member = mapper.get(form.getEmail());
+        assertEquals(form.getEmail(), member.getEmail());
     }
 
     @Test
@@ -84,7 +93,7 @@ public class JoinServiceTest {
             service.process(form);
 
         }, field + " 테스트");
-
+        
         String message = thrown.getMessage();
         assertTrue(message.contains(keyword), field + " 키워드 테스트");
     }
@@ -106,9 +115,9 @@ public class JoinServiceTest {
     @DisplayName("이메일이 형식에 맞지 않으면 BadRequestException 발생")
     void emailPatternTest() {
         BadRequestException thrown = assertThrows(BadRequestException.class, () -> {
-            RequestJoin form = getData();
-            form.setEmail("******");
-            service.process(form);
+           RequestJoin form = getData();
+           form.setEmail("******");
+           service.process(form);
         });
 
         String message = thrown.getMessage();
@@ -119,11 +128,11 @@ public class JoinServiceTest {
     @DisplayName("비밀번호 자리수가 8자리 미만이면 BadRequestException 발생")
     void passwordLengthTest() {
         BadRequestException thrown = assertThrows(BadRequestException.class, () -> {
-            Faker faker = new Faker();
-            RequestJoin form = getData();
-            form.setPassword(faker.regexify("\\w{3,7}").toLowerCase());
-            form.setConfirmPassword(form.getPassword());
-            service.process(form);
+           Faker faker = new Faker();
+           RequestJoin form = getData();
+           form.setPassword(faker.regexify("\\w{3,7}").toLowerCase());
+           form.setConfirmPassword(form.getPassword());
+           service.process(form);
         });
 
         String message = thrown.getMessage();
@@ -134,10 +143,11 @@ public class JoinServiceTest {
     @Test
     @DisplayName("이미 가입된 메일인 경우 DuplicatedMemberException 발생")
     void duplicateEmailTest() {
+        MemberServiceProvider provider = MemberServiceProvider.getInstance();
         assertThrows(DuplicatedMemberException.class, () -> {
             RequestJoin form = getData();
-            service.process(form);
-            service.process(form);
+            provider.joinService().process(form);
+            provider.joinService().process(form);
         });
     }
 }

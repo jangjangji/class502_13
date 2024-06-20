@@ -8,11 +8,12 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 public class DBConnTest {
+    
     @Test
     @DisplayName("DB 연결 테스트")
     void dbConnectionTest() {
-        assertDoesNotThrow(()->{
-           SqlSession session = DBConn.sqlSession();
+        assertDoesNotThrow(() -> {
+            SqlSession session = DBConn.getSession();
             System.out.println(session);
         });
     }
