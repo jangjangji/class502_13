@@ -4,7 +4,8 @@
 <c:url var="actionUrl" value="/member/join" />
 <layout:main title="회원가입">
     <h1>회원가입</h1>
-    <form method="post" action="${actionUrl}" autocomplete="off">
+<%--    제출을 같은 페이지에서 하게 하려면 targer ifrmProcess 추가해줌--%>
+    <form method="post" action="${actionUrl}" autocomplete="off" target="ifrmProcess">
         <dl>
             <dt>이메일</dt>
             <dd>

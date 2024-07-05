@@ -47,4 +47,8 @@
             <jsp:invoke fragment="footer" />
         </footer>
     </body>
+<%--    이거슨 뭐하는거냐 같은페이지를 유지하려고 만든것이다--%>
+        <iframe name="ifrmProcess"class="dn">
+
+        </iframe>
 </html>
