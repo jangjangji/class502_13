@@ -15,7 +15,7 @@ public class Assembler {
 
         return validator;
     }
-    public JoinService joinService(){
-       return new JoinService();
-    }
+//    public JoinService joinService(){
+//       return new JoinService();
+//    }
 }
