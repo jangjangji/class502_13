@@ -13,10 +13,10 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 @NoArgsConstructor @AllArgsConstructor
-
+//@Table("CH_MEMBER")
 public class Member {
     @Id
-    @Column("ID")
+    //@Column("ID")
     private Long seq;
 
     private String email;

@@ -1,4 +1,10 @@
 package org.choongang.member.controllers;
 
-public class RequestLogin2 {
-}
+import lombok.Builder;
+
+//@Getter
+@Builder
+public record RequestLogin2(
+    String email,
+    String password
+) {}

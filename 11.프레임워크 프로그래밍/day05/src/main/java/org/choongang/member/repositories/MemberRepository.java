@@ -13,6 +13,7 @@ public interface MemberRepository extends CrudRepository<Member, Long> {
     Member findByEmail(String email);
     Page<Member> findByUserNameContaining(String keyword, Pageable pageable);
     List<Member> findByUserNameContainingAndEmailContainingOrderByRegDtDesc(String key1, String key2);
-    @Query("SELECT * FROM  MEMBER WHERE USER_NAME like :param1 AND EMAIL LIKE :param2 ORDER BY REG_DT DESC")
+
+    @Query("SELECT * FROM MEMBER WHERE USER_NAME LIKE :param1 AND EMAIL LIKE :param2 ORDER BY REG_DT DESC")
     List<Member> getMembers(@Param("param1") String key1, @Param("param2") String key2);
 }

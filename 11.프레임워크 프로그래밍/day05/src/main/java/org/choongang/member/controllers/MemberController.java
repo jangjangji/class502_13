@@ -1,87 +1,96 @@
 package org.choongang.member.controllers;
 
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.choongang.member.entities.Member;
+import org.choongang.member.services.JoinService;
+import org.choongang.member.services.LoginService;
+import org.choongang.member.validators.JoinValidator;
+import org.choongang.member.validators.LoginValidator;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @Controller
 @RequestMapping("/member")
+@RequiredArgsConstructor
 public class MemberController {
-    @ModelAttribute("commonValue")
-    public String commonValue(){
-        return "공통 속성";
-    }
+
+    private final JoinValidator joinValidator;
+    private final JoinService joinService;
+
+    private final LoginValidator loginValidator;
+    private final LoginService loginService;
+
+
 
     @GetMapping("/join")
-    public String join(@ModelAttribute("command") RequestJoin form) {
+    public String join(@ModelAttribute RequestJoin form) {
 
         return "member/join";
     }
 
     @PostMapping("/join")
-    public String joinPs(@ModelAttribute("command") RequestJoin form) {
+    public String joinPs(@Valid RequestJoin form, Errors errors) {
+        // 회원 가입 데이터 검증
+        joinValidator.validate(form, errors);
 
-        log.info(form.toString());
+        if (errors.hasErrors()) { // reject, rejectValue가 한번이라도 호출되면 true
+            return "member/join";
+        }
 
-        return "member/join";
+        joinService.process(form); // 회원 가입 처리
+
+        return "redirect:/member/login";
     }
 
+
     @GetMapping("/login")
-    public String login() {
+    public String login(@ModelAttribute RequestLogin form,
+                        @CookieValue(name="savedEmail", required = false) String savedEmail/*,
+                        @SessionAttribute(name="member", required = false) Member member */) {
+        /*
+        if (member != null) {
+            log.info(member.toString());
+        }
+        */
+
+        if (savedEmail != null) {
+            form.setSaveEmail(true);
+            form.setEmail(savedEmail);
+        }
 
         return "member/login";
     }
 
-    //private final Logger log = LoggerFactory.getLogger(MemberController.class);
-    /*
 
+    @PostMapping("/login")
+    public String loginPs(@Valid RequestLogin form, Errors errors) {
 
-    @PostMapping("/join")
-    public String joinPs(RequestJoin form) {
+        loginValidator.validate(form, errors);
 
-       //return "redirect:/member/login"; // Location: /day05/member/login
-        return "forward:/member/login"; // 버퍼 치환
-    }
-    @GetMapping("/join")
-    public String join1() {
+        if (errors.hasErrors()) {
+            return "member/login";
+        }
 
-        log.info("{}, {} 없음", "mode1", "mode2");
+        // 로그인 처리
+        loginService.process(form);
 
-        return "member/join";
+        return "redirect:/";
     }
 
-    @GetMapping(path="/join", params={"mode=join"})
-    public String join() {
-
-        log.info("mode=join");
-
-        return "member/join";
-    }
-
-
-
-    @PostMapping(path="/join", headers="appKey=1234", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public String joinPs(RequestJoin form) {
-
-        log.info("joinPs 실행...");
+    @RequestMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate(); // 세션 비우기
 
         return "redirect:/member/login";
     }
-    */
+
     /*
-    @GetMapping("/member/join")
-    public ModelAndView join() {
-
-        ModelAndView mv = new ModelAndView();
-        mv.addObject("message", "안녕하세요.");
-        mv.setViewName("member/join");
-
-        return mv;
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        binder.setValidator(joinValidator);
     }*/
 }
