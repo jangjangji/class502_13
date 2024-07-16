@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.choongang.global.exceptions.BadRequestException;
 import org.choongang.member.services.JoinService;
 import org.choongang.member.services.LoginService;
 import org.choongang.member.validators.JoinValidator;
@@ -17,51 +18,45 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/member")
 @RequiredArgsConstructor
 public class MemberController {
-
-    private final JoinValidator joinValidator;
+    private final JoinValidator joinValidator; //의존성
     private final JoinService joinService;
-
-    private final LoginValidator loginValidator;
     private final LoginService loginService;
-
-
+    private final LoginValidator loginValidator;
 
     @GetMapping("/join")
-    public String join(@ModelAttribute RequestJoin form) {
+    public String join(@ModelAttribute RequestJoin form){ //회원가입 양식
 
         return "member/join";
     }
 
     @PostMapping("/join")
-    public String joinPs(@Valid RequestJoin form, Errors errors) {
-        // 회원 가입 데이터 검증
+    public String joinPs(@Valid RequestJoin form, Errors errors){ //양식 제출
+        //회원가입 form 에서 post 요청시 검증
+        //회원가입 데이터 검증
         joinValidator.validate(form, errors);
 
-        if (errors.hasErrors()) { // reject, rejectValue가 한번이라도 호출되면 true
+        if(errors.hasErrors()){ //reject, rejectValue가 한번이라도 호출되면 true
+            //검증 실패시 다시 양식 보여줌
             return "member/join";
         }
 
-        joinService.process(form); // 회원 가입 처리
+        joinService.process(form); //회원가입 처리
 
-        return "redirect:/member/login";
+        //검증 이상 없으면 이동
+        return "redirect:/member/login"; //회원가입 양식 제출 시 로그인 페이지로 리다이렉트
     }
-
 
     @GetMapping("/login")
     public String login(@ModelAttribute RequestLogin form,
-                        @CookieValue(name="savedEmail", required = false) String savedEmail/*,
-                        @SessionAttribute(name="member", required = false) Member member */) {
-        /*
-        if (member != null) {
-            log.info(member.toString());
-        }
-        */
-
-        if (savedEmail != null) {
+                        @CookieValue(name = "saveEmail",required = false) String savedEmail/*@SessionAttribute(name = "member",required = false) Member member*/)
+    {
+//        if(member != null) {
+//            log.info(member.toString());
+//        }
+        if(savedEmail != null){
             form.setSaveEmail(true);
             form.setEmail(savedEmail);
         }
-
         return "member/login";
     }
 
@@ -75,17 +70,44 @@ public class MemberController {
             return "member/login";
         }
 
-        // 로그인 처리
+        //로그인 처리
+//        String email = form.getEmail();
         loginService.process(form);
 
         return "redirect:/";
     }
 
     @RequestMapping("/logout")
-    public String logout(HttpSession session) {
-        session.invalidate(); // 세션 비우기
+    public String logout(HttpSession session){
+        session.invalidate(); //세션 비우기
 
         return "redirect:/member/login";
+    }
+
+    /*회원목록*/
+    @GetMapping("/list")
+    public String list(@Valid @ModelAttribute MemberSearch search,Errors errors){
+        //검증이 필요한 형태임을 알려줌 Valid 애노테이션 추가, 에러 객체 추가
+
+        log.info(search.toString());
+
+        boolean result = false;
+        if(!result){
+            throw new BadRequestException("예외 발생!!!");
+        }
+
+        return "member/list";
+    }
+
+    @ResponseBody //반환값을 void로 하기위해 넣은 애노테이션
+    @GetMapping({"/info/{id}/{id2}","/info/{id}"}) //경로변수 패턴 - 바뀔 수 있는 부분
+    public void info(@PathVariable("id") String email, @PathVariable(name= "id2", required = false) String email2){ //여러개 지정도 가능
+        // 값이 없는 주소 대입되었을때 required false로 하면 null값이 들어간다.
+        log.info("email:{}, email2:{}",email,email2);
+    }
+    @ExceptionHandler(BadRequestException.class)
+    public String errorHandler(){
+        return "error/common";
     }
 
     /*
