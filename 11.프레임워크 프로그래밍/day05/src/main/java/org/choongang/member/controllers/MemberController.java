@@ -1,17 +1,24 @@
 package org.choongang.member.controllers;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.choongang.global.exceptions.BadRequestException;
+import org.choongang.member.entities.Member;
 import org.choongang.member.services.JoinService;
 import org.choongang.member.services.LoginService;
 import org.choongang.member.validators.JoinValidator;
 import org.choongang.member.validators.LoginValidator;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.IntStream;
 
 @Slf4j
 @Controller
@@ -93,11 +100,15 @@ public class MemberController {
 
         boolean result = false;
         if(!result){
-            throw new BadRequestException("예외 발생!!!");
+            throw new BadRequestException("예외");
         }
 
         return "member/list";
     }
+
+
+
+
 
     @ResponseBody //반환값을 void로 하기위해 넣은 애노테이션
     @GetMapping({"/info/{id}/{id2}","/info/{id}"}) //경로변수 패턴 - 바뀔 수 있는 부분
@@ -105,14 +116,32 @@ public class MemberController {
         // 값이 없는 주소 대입되었을때 required false로 하면 null값이 들어간다.
         log.info("email:{}, email2:{}",email,email2);
     }
-    @ExceptionHandler(BadRequestException.class)
-    public String errorHandler(){
-        return "error/common";
+    @ResponseBody //컨트롤러에서 정의하는 것
+    @GetMapping("/list2")
+    public List<Member> list(){
+            List<Member> members = IntStream.rangeClosed(1,10)
+                    .mapToObj(i -> Member.builder()
+                            .email("user"+i+"@test.org")
+                            .password("12345678")
+                            .userName("사용자"+i)
+                            .regDt(LocalDateTime.now())
+                            .build())
+                    .toList();
+            return  members;
+        }
     }
+
+//    @ExceptionHandler(Exception.class)
+//    public String errorHandler(Exception e, HttpServletRequest request , Model model){
+//        e.printStackTrace();
+//        log.info("member에서 유입");
+//
+//        return "error/common";
+//    }
 
     /*
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         binder.setValidator(joinValidator);
     }*/
-}
+
