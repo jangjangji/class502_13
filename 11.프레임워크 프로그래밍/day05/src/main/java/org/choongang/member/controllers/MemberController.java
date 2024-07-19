@@ -92,20 +92,39 @@ public class MemberController {
     }
 
     /*회원목록*/
+//    @GetMapping("/list")
+//    public String list(@Valid @ModelAttribute MemberSearch search,Errors errors){
+//        //검증이 필요한 형태임을 알려줌 Valid 애노테이션 추가, 에러 객체 추가
+//
+//        log.info(search.toString());
+//
+//        boolean result = false;
+//        if(!result){
+//            throw new BadRequestException("예외");
+//        }
+//
+//        return "member/list";
+//    }
     @GetMapping("/list")
-    public String list(@Valid @ModelAttribute MemberSearch search,Errors errors){
-        //검증이 필요한 형태임을 알려줌 Valid 애노테이션 추가, 에러 객체 추가
-
-        log.info(search.toString());
-
-        boolean result = false;
-        if(!result){
-            throw new BadRequestException("예외");
-        }
-
+    public String list2(Model model){
+//
+//        Member member = Member.builder()
+//                .email("user@test.org")
+//                .password("12345678")
+//                .userName("사용자01")
+//                .regDt(LocalDateTime.now())
+//                .build();
+//        model.addAttribute("member", member);
+        List<Member> items = IntStream.rangeClosed(1,10)
+                .mapToObj(i -> Member.builder()
+                        .email("user"+i+"@test.org")
+                        .userName("사용자"+i)
+                        .regDt(LocalDateTime.now())
+                        .build())
+                .toList();
+        model.addAttribute("items", items);
         return "member/list";
     }
-
 
 
 

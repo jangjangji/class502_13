@@ -31,8 +31,10 @@ public class ThymeleafConfig  implements WebMvcConfigurer {
         SpringTemplateEngine templateEngine = new SpringTemplateEngine();
         templateEngine.setTemplateResolver(templateResolver());
         templateEngine.setEnableSpringELCompiler(true);
+        //EL식 사용 가능하게 해주는 기능
         templateEngine.addDialect(new Java8TimeDialect());
         templateEngine.addDialect(new LayoutDialect());
+        //확장 기능
         return templateEngine;
     }
 
@@ -40,6 +42,7 @@ public class ThymeleafConfig  implements WebMvcConfigurer {
     public ThymeleafViewResolver thymeleafViewResolver() {
         ThymeleafViewResolver resolver = new ThymeleafViewResolver();
         resolver.setContentType("text/html");
+        //jsp 맨위에 넣었던 거 추가해줌
         resolver.setCharacterEncoding("utf-8");
         resolver.setTemplateEngine(templateEngine());
         return resolver;
