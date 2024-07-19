@@ -26,6 +26,6 @@ public class Member {
     private String password;
 
     private String userName;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+   // @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime regDt;
 }
