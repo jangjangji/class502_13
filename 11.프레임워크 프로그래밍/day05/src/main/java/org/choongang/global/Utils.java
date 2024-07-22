@@ -19,6 +19,9 @@ public class Utils {
 
     private final MessageSource messageSource;
     private final HttpServletRequest request;
+    public String toUpper(String str){
+        return str.toUpperCase();
+    }
 
     public Map<String, List<String>> getErrorMessages(Errors errors) {
         // FieldErrors
