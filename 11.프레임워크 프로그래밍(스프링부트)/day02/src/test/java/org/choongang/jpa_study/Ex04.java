@@ -8,36 +8,37 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-
 @SpringBootTest
 @Transactional
-public class Ex03 {
+@TestPropertySource(properties = "spring.profiles.active=test")
+public class Ex04 {
+
     @PersistenceContext
     private EntityManager em;
 
     @Test
-    void test1(){
+    void test1() throws Exception {
         Member member = new Member();
         member.setEmail("user01@test.org");
         member.setPassword("12345678");
         member.setUserName("사용자01");
-        member.setCreatedAt(LocalDateTime.now());
 
         em.persist(member);
-        Member member2 = new Member();
-        member2.setEmail("user01@test.org");
-        member2.setPassword("12345678");
-        member2.setUserName("사용자01");
-        member2.setCreatedAt(LocalDateTime.now());
-        em.persist(member2);
         em.flush();
 
         em.clear();
-        Member _member1 = em.find(Member.class, member.getSeq());
-        System.out.println(_member1);
 
-        Member _member2 = em.find(Member.class, member2.getSeq());
+        member = em.find(Member.class, member.getSeq());
+        System.out.printf("createdAt:%s, modifiedAt:%s%n", member.getCreatedAt(), member.getModifiedAt());
 
+
+        Thread.sleep(5000);
+        member.setUserName("(수정)사용자01");
+        em.flush();
+        em.clear();
+
+        member = em.find(Member.class, member.getSeq());
+        System.out.printf("createdAt:%s, modifiedAt:%s%n", member.getCreatedAt(), member.getModifiedAt());
+        System.out.println(member);
     }
 }
