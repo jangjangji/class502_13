@@ -38,13 +38,13 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Authority authority;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "profile_seq")
     private MemberProfile profile;
 
 
     @ToString.Exclude // ToString 추가 배제
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member" ,cascade = CascadeType.REMOVE)
     private List<BoardData> items;
 
 }

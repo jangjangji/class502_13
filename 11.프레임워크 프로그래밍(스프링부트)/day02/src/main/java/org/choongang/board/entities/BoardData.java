@@ -17,7 +17,7 @@ public class BoardData extends BaseEntity {
     @Id @GeneratedValue
     private Long seq;
 
-    @ManyToOne // member_seq(엔티티명_기본키)
+    @ManyToOne(fetch = FetchType.LAZY) // member_seq(엔티티명_기본키)
     @JoinColumn(name = "mSeq")
     private Member member;
 
@@ -26,5 +26,8 @@ public class BoardData extends BaseEntity {
 
     @Lob
     private String content;
+
+    //@ManyToMany
+    //private List<HashTag> tags;
 
 }

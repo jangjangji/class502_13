@@ -3,10 +3,8 @@ package org.choongang.member.entities;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.OneToOne;
+import lombok.*;
 
 @Data
 @Entity
@@ -18,5 +16,9 @@ public class MemberProfile {
     private Long seq;
     private String profileImage;
     private String status;
+
+    @OneToOne(mappedBy = "profile")
+    @ToString.Exclude
+    private Member member;
 
 }

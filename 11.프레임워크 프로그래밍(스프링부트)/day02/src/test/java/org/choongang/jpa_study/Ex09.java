@@ -50,7 +50,7 @@ public class Ex09 {
     void test1(){
         BoardData item = boardDataRepository.findById(1L).orElse(null);
         Member member = item.getMember(); //게시글을 작성한 회원
-        System.out.println(item);
+       System.out.println(item);
     }
     @Test
     void test2(){
